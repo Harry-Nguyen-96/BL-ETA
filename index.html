@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tra cứu ETA theo số BL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f6f8; }
+    .card { max-width:520px; margin:40px auto; background:#fff; padding:24px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.08); }
+    h2 { margin-top:0; }
+    input, button { width:100%; padding:10px; margin-top:10px; }
+    button { background:#2563eb; color:#fff; border:none; border-radius:6px; cursor:pointer; }
+    button.danger { background:#dc2626; }
+    .result { margin-top:16px; font-weight:bold; }
+    .hidden { display:none; }
+    hr { margin:32px 0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+
+    <!-- ADMIN LOGIN -->
+    <h2>Admin đăng nhập</h2>
+    <input id="adminPass" type="password" placeholder="Mật khẩu admin" />
+    <button onclick="adminLogin()">Đăng nhập</button>
+
+    <!-- ADMIN PANEL -->
+    <div id="adminPanel" class="hidden">
+      <hr />
+      <h2>Quản lý BL</h2>
+      <input id="blInput" placeholder="Số BL" />
+      <input id="etaInput" type="date" />
+      <input id="vesselInput" placeholder="Tên tàu" />
+      <input id="polInput" placeholder="POL" />
+      <input id="podInput" placeholder="POD" />
+      <input id="containerInput" placeholder="Container No" />
+      <button onclick="saveBL()">Lưu / Cập nhật</button>
+      <button class="danger" onclick="deleteBL()">Xoá BL</button>
+    </div>
+
+    <hr />
+
+    <!-- PUBLIC SEARCH -->
+    <h2>Tra cứu ETA (Public)</h2>
+    <input id="searchBL" placeholder="Nhập số BL để tra cứu" />
+    <button onclick="searchBL()">Tra cứu</button>
+    <div id="result" class="result"></div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // 🔧 THAY THÔNG TIN FIREBASE
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // 🔐 MẬT KHẨU ADMIN (bạn đổi lại)
+    const ADMIN_PASSWORD = "admin123";
+
+    function adminLogin() {
+      if (adminPass.value === ADMIN_PASSWORD) {
+        adminPanel.classList.remove('hidden');
+        alert('Đăng nhập admin thành công');
+      } else {
+        alert('Sai mật khẩu');
+      }
+    }
+
+    async function saveBL() {
+      const bl = blInput.value.trim();
+      if (!bl) return alert('Thiếu số BL');
+
+      await db.collection('bl_eta').doc(bl).set({
+        eta: etaInput.value,
+        vessel: vesselInput.value,
+        pol: polInput.value,
+        pod: podInput.value,
+        container: containerInput.value,
+        updatedAt: new Date()
+      });
+      alert('Đã lưu / cập nhật BL ' + bl);
+    }
+
+    async function deleteBL() {
+      const bl = blInput.value.trim();
+      if (!bl) return alert('Nhập BL cần xoá');
+      if (!confirm('Xác nhận xoá BL ' + bl + '?')) return;
+
+      await db.collection('bl_eta').doc(bl).delete();
+      alert('Đã xoá BL ' + bl);
+    }
+
+    async function searchBL() {
+      const bl = searchBL.value.trim();
+      if (!bl) return;
+
+      const doc = await db.collection('bl_eta').doc(bl).get();
+      if (!doc.exists) {
+        result.innerText = 'Không tìm thấy BL này';
+        return;
+      }
+      const d = doc.data();
+      result.innerHTML = `
+        BL: ${bl}<br>
+        ETA: ${d.eta || '-'}<br>
+        Tên tàu: ${d.vessel || '-'}<br>
+        POL: ${d.pol || '-'}<br>
+        POD: ${d.pod || '-'}<br>
+        Container: ${d.container || '-'}
+      `;
+    }
+  </script>
+</body>
+</html>
