@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#071a2b">
+  <title>Admin | Shipment ETA Tracking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="admin-page">
+  <header class="admin-header">
+    <a class="brand admin-brand" href="index.html" aria-label="Go to public tracking page">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 36 36"><path d="M7 23.5c3.5 0 3.5 2 7 2s3.5-2 7-2 3.5 2 7 2M9 18l9-8 9 8M13 18v-4m10 4v-4"/></svg>
+      </span>
+      <span>OCEAN ETA <small>ADMIN</small></span>
+    </a>
+    <div id="admin-user" class="admin-user" hidden>
+      <span id="user-email"></span>
+      <button id="logout-button" class="text-button" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <section id="login-view" class="login-card" aria-labelledby="login-title">
+      <p class="eyebrow">SECURE ACCESS</p>
+      <h1 id="login-title">Admin sign in</h1>
+      <p>Sign in with your authorized Firebase account to manage shipment data.</p>
+      <form id="login-form" class="stack-form" novalidate>
+        <label for="email">Email address</label>
+        <input id="email" type="email" autocomplete="username" placeholder="admin@company.com" required>
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+        <button class="primary-button" type="submit">Sign in</button>
+        <div id="login-status" class="status-message" role="status" aria-live="polite" hidden></div>
+      </form>
+      <a class="back-link" href="index.html">← Back to public tracking</a>
+    </section>
+
+    <section id="dashboard-view" class="dashboard" hidden aria-labelledby="dashboard-title">
+      <div class="dashboard-heading">
+        <div>
+          <p class="eyebrow">SHIPMENT MANAGEMENT</p>
+          <h1 id="dashboard-title">ETA records</h1>
+          <p>Add a shipment or select an existing record to update it.</p>
+        </div>
+        <button id="new-record-button" class="secondary-button" type="button">+ New record</button>
+      </div>
+
+      <div class="dashboard-grid">
+        <section class="panel editor-panel" aria-labelledby="editor-title">
+          <h2 id="editor-title">Add shipment</h2>
+          <form id="shipment-form" class="stack-form" novalidate>
+            <label for="shipment-bl">BL Number</label>
+            <input id="shipment-bl" type="text" autocomplete="off" maxlength="60" required>
+            <div class="form-grid">
+              <div>
+                <label for="vessel-name">Vessel Name</label>
+                <input id="vessel-name" type="text" maxlength="100" required>
+              </div>
+              <div>
+                <label for="voyage-number">Voyage No.</label>
+                <input id="voyage-number" type="text" maxlength="60" required>
+              </div>
+            </div>
+            <label for="eta-date">ETA</label>
+            <input id="eta-date" type="date" required>
+            <button id="save-button" class="primary-button" type="submit">Save shipment</button>
+            <button id="delete-button" class="danger-button" type="button" hidden>Delete shipment</button>
+            <div id="editor-status" class="status-message" role="status" aria-live="polite" hidden></div>
+          </form>
+        </section>
+
+        <section class="panel records-panel" aria-labelledby="records-title">
+          <div class="panel-heading">
+            <h2 id="records-title">All records</h2>
+            <span id="record-count" class="count-badge">0</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>BL Number</th><th>Vessel / Voyage</th><th>ETA</th><th><span class="sr-only">Actions</span></th></tr></thead>
+              <tbody id="records-body"></tbody>
+            </table>
+            <div id="records-empty" class="empty-state">No shipment records yet.</div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="assets/admin.js"></script>
+</body>
+</html>
